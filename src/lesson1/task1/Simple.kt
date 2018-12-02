@@ -1,6 +1,7 @@
 @file:Suppress("UNUSED_PARAMETER")
 package lesson1.task1
 
+
 import kotlin.math.*
 
 /**
@@ -48,8 +49,9 @@ fun quadraticRootProduct(a: Double, b: Double, c: Double): Double {
  * Пример главной функции
  */
 fun main(args: Array<String>) {
-    val x1x2 = quadraticRootProduct(1.0, 13.0, 42.0)
-    println("Root product: $x1x2")
+    val x = 8
+    val result = sqr(x)
+    println("$x * $x = $result")
 }
 
 /**
@@ -74,8 +76,20 @@ fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double = TODO()
  *
  * Пользователь задает угол в градусах, минутах и секундах (например, 36 градусов 14 минут 35 секунд).
  * Вывести значение того же угла в радианах (например, 0.63256).
+ *
  */
-fun angleInRadian(deg: Int, min: Int, sec: Int): Double = TODO()
+/**        Формула перевода проста — градусы * Пи/180. Если градусы указываются в форме «градусы минуты секунды»,
+* то сначала их надо перевести в десятичную форму, примерно так - «градусы + (минуты + секунды/60)/60».
+Если речь идет о земных координатах, надо учитывать еще и знак: северная широта и восточная долгота — знак плюс,
+южная широта и западная долгота — минус.*/
+
+fun angleInRadian(deg: Int, min: Int, sec: Int): Double {
+    val degD: Double = deg.toDouble()
+    val minD: Double = min.toDouble()
+    val secD: Double = sec.toDouble()
+
+    return (((secD / 60 + minD) / 60 + degD) * PI) / 180
+}
 
 /**
  * Тривиальная
@@ -83,7 +97,9 @@ fun angleInRadian(deg: Int, min: Int, sec: Int): Double = TODO()
  * Найти длину отрезка, соединяющего точки на плоскости с координатами (x1, y1) и (x2, y2).
  * Например, расстояние между (3, 0) и (0, 4) равно 5
  */
-fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double = TODO()
+
+
+fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double = sqrt(sqr(x2 - x1) + sqr(y2 - y1))
 
 /**
  * Простая
@@ -91,8 +107,7 @@ fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double = TODO()
  * Пользователь задает целое число, большее 100 (например, 3801).
  * Определить третью цифру справа в этом числе (в данном случае 8).
  */
-fun thirdDigit(number: Int): Int = TODO()
-
+fun thirdDigit(number: Int): Int = number % 1000 / 100
 /**
  * Простая
  *
@@ -100,7 +115,9 @@ fun thirdDigit(number: Int): Int = TODO()
  * прибыл на станцию назначения в h2 часов m2 минут того же дня (например в 13:01).
  * Определите время поезда в пути в минутах (в данном случае 216).
  */
-fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minutesArrive: Int): Int = TODO()
+fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minutesArrive: Int): Int {
+    return (hoursArrive - hoursDepart) * 60 - minutesDepart + minutesArrive
+}
 
 /**
  * Простая
@@ -109,7 +126,10 @@ fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minute
  * Сколько денег будет на счету через 3 года (с учётом сложных процентов)?
  * Например, 100 рублей под 10% годовых превратятся в 133.1 рубля
  */
-fun accountInThreeYears(initial: Int, percent: Int): Double = TODO()
+fun accountInThreeYears(initial: Int, percent: Int): Double{
+    val decPercent: Double = 1.0 + percent.toDouble() / 100
+    return initial * Math.pow(decPercent, 3.0)
+}
 
 /**
  * Простая
@@ -117,4 +137,4 @@ fun accountInThreeYears(initial: Int, percent: Int): Double = TODO()
  * Пользователь задает целое трехзначное число (например, 478).
  * Необходимо вывести число, полученное из заданного перестановкой цифр в обратном порядке (например, 874).
  */
-fun numberRevert(number: Int): Int = TODO()
+fun numberRevert(number: Int): Int = number % 10 * 100 + number % 100 / 10 * 10 + (number - (number % 100)) / 100
