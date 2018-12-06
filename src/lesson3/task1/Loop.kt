@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED_PARAMETER")
+
 package lesson3.task1
 
 import kotlin.math.sqrt
@@ -38,7 +39,7 @@ fun isPrime(n: Int): Boolean {
  */
 fun isPerfect(n: Int): Boolean {
     var sum = 1
-    for (m in 2..n/2) {
+    for (m in 2..n / 2) {
         if (n % m > 0) continue
         sum += m
         if (sum > n) break
@@ -66,7 +67,22 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int = TODO()
+fun digitNumber(n: Int): Int {
+    var count = 0
+    var power = 1
+
+    if (n == 0) return 1
+    else if (n == Int.MAX_VALUE) return 10
+    else {
+        for (i in 1..100) {
+            if (n / power != 0) {
+                count++
+                power *= 10
+            } else break
+        }
+    }
+    return count
+}
 
 /**
  * Простая
@@ -74,7 +90,7 @@ fun digitNumber(n: Int): Int = TODO()
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun fib(n: Int): Int = TODO()
+fun fib(n: Int): Int = if (n <= 2) 1 else fib(n - 1) + fib(n - 2)
 
 /**
  * Простая
@@ -159,7 +175,23 @@ fun cos(x: Double, eps: Double): Double = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun revert(n: Int): Int = TODO()
+fun revert(n: Int): Int {
+    var input = n
+    var iter = 1
+    var answer = 0
+    var nNumber = n
+
+    while (input / 10 > 0) {
+        iter *= 10
+        input /= 10
+    }
+    do {
+        answer += nNumber % 10 * iter
+        nNumber /= 10
+        iter /= 10
+    } while (iter >= 1)
+    return answer
+}
 
 /**
  * Средняя
@@ -170,7 +202,38 @@ fun revert(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun isPalindrome(n: Int): Boolean = TODO()
+fun isPalindrome(n: Int): Boolean {
+    var digitsToCheck = n
+    var x = 1
+    var y = 10
+    var iter = 1
+    var answer = 0
+
+    while (digitsToCheck / 10 > 0) {
+        x *= 10
+        iter++
+        digitsToCheck /= 10
+    }
+    var z = 1
+    for (i in 1..iter / 2) {
+        if (z == 1) {
+            if (n / x != n % y) answer++
+        } else {
+            if ((n / x) % 10 != (n % y) / z) answer++
+        }
+        x /= 10
+        y *= 10
+        z *= 10
+    }
+
+//    println(x)
+//    println(nNumber / x)
+//    println(nNumber % 10)
+
+    return if (answer > 0) false else true
+}
+
+
 
 /**
  * Средняя
@@ -180,7 +243,50 @@ fun isPalindrome(n: Int): Boolean = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun hasDifferentDigits(n: Int): Boolean = TODO()
+fun hasDifferentDigits(n: Int): Boolean {
+    var digitsToCheck = n
+    var x = 1
+    var answer = 0
+
+    while (digitsToCheck / 10 > 0) {
+        x *= 10
+        digitsToCheck /= 10
+    }
+    val first = n / x
+    while (answer == 0) {
+        x /= 10
+        if (x < 1) break
+        if (first != n / x % 10) {
+            answer++
+            break
+        }
+    }
+    return answer != 0
+}
+
+fun main(args: Array<String>) {
+    println(hasDifferentDigits(Int.MAX_VALUE))
+
+    /*println(12345678 / 10000000)
+    println(12345678 / 1000000 % 10)
+    println(12345678 / 100000 % 10)
+    println(12345678 / 100000 % 10)
+    println(12345678 / 100000 % 10)
+    println(12345678 / 10000 % 10)
+    println(12345678 / 1000 % 10)
+    println(12345678 / 10 % 10)
+    println(12345678 / 1 % 10)*/
+
+    //println(isPalindrome(3653))
+    /*println(24688642 / 10000000)
+    println(24688642 % 10)
+    println(24688642 / 1000000 % 10)
+    println(24688642 % 100 / 10)
+    println(24688642 / 100000 % 10)
+    println(24688642 % 1000 / 100)
+    println(24688642 / 10000 % 10)
+    println(24688642 % 10000 / 1000)*/
+}
 
 /**
  * Сложная
