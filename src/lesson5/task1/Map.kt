@@ -288,12 +288,17 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> {
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
+
     for (letter in word.toLowerCase()) {
-        if (letter !in chars) {
+        if (letter.toLowerCase() !in chars) {
             return false
         }
     }
     return true
+}
+fun main(args: Array<String>) {
+    println(canBuildFrom(listOf('f', '?', '1', '7', 'P', 'z', '!', 'Q', 'M',
+            'x', 'r', 'Z', 'k', 'n', 'A', 'x', 'q', 'J'), "f?17Pz!QMxrZknAxqJ"))
 }
 
 /**

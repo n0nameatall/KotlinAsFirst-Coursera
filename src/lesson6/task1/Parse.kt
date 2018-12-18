@@ -42,22 +42,20 @@ fun timeSecondsToStr(seconds: Int): String {
 /**
  * Пример: консольный ввод
  */
-fun main(args: Array<String>) {
+/*fun main(args: Array<String>) {
     println("Введите время в формате ЧЧ:ММ:СС")
     val line = readLine()
     if (line != null) {
         val seconds = timeStrToSeconds(line)
         if (seconds == -1) {
             println("Введённая строка $line не соответствует формату ЧЧ:ММ:СС")
-        }
-        else {
+        } else {
             println("Прошло секунд с начала суток: $seconds")
         }
-    }
-    else {
+    } else {
         println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
     }
-}
+}*/
 
 
 /**
@@ -71,7 +69,55 @@ fun main(args: Array<String>) {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun dateStrToDigit(str: String): String {
+    val parts = str.split(" ")
+
+    if (parts.size != 3) {
+        return ""
+    }
+
+    var isDateProper = true
+    val day = parts[0].toInt()
+    val year = parts[2].toInt()
+    val month: Int = when (parts[1]) {
+        "января" -> 1
+        "февраля" -> 2
+        "марта" -> 3
+        "апреля" -> 4
+        "мая" -> 5
+        "июня" -> 6
+        "июля" -> 7
+        "августа" -> 8
+        "сентября" -> 9
+        "октября" -> 10
+        "ноября" -> 11
+        "декабря" -> 12
+        else -> -1
+    }
+
+    when (month) {
+        2 -> {
+            if (year % 400 == 0 || year % 4 == 0 && year % 100 != 0) {
+                if (day < 1 || day > 29) {
+                    isDateProper = false
+                }
+            } else {
+                if (day < 1 || day > 28) {
+                    isDateProper = false
+                }
+            }
+        }
+        4, 6, 9, 11 -> if (day < 1 || day > 30) isDateProper = false
+        1, 3, 5, 7, 8, 10, 12 -> if (day < 1 || day > 31) isDateProper = false
+        else -> isDateProper = false
+    }
+    if (year < 1 || year > 9999) isDateProper = false
+    return if (isDateProper) {
+        String.format("%02d.%02d.%d", day, month, year)
+    } else {
+        ""
+    }
+}
 
 /**
  * Средняя
@@ -83,7 +129,58 @@ fun dateStrToDigit(str: String): String = TODO()
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String {
+    val parts = digital.split(".")
+    if (parts.size != 3) return ""
+
+    var isDateProper = true
+    val day: Int
+    val year: Int
+    try {
+        day = parts[0].toInt()
+        year = parts[2].toInt()
+    } catch (e: Exception) {
+        return ""
+    }
+
+    val month = when (parts[1]) {
+        "01" -> "января"
+        "02" -> "февраля"
+        "03" -> "марта"
+        "04" -> "апреля"
+        "05" -> "мая"
+        "06" -> "июня"
+        "07" -> "июля"
+        "08" -> "августа"
+        "09" -> "сентября"
+        "10" -> "октября"
+        "11" -> "ноября"
+        "12" -> "декабря"
+        else -> "-1"
+    }
+    when (month) {
+        "февраля" -> {
+            if (year % 400 == 0 || year % 4 == 0 && year % 100 != 0) {
+                if (day < 1 || day > 29) {
+                    isDateProper = false
+                }
+            } else {
+                if (day < 1 || day > 28) {
+                    isDateProper = false
+                }
+            }
+        }
+        "апреля", "июня", "сентября", "ноября" -> if (day < 1 || day > 30) isDateProper = false
+        "января", "марта", "мая", "июля", "августа", "октября", "декабря" -> if (day < 1 || day > 31) isDateProper = false
+        else -> isDateProper = false
+    }
+    if (year < 1 || year > 9999) isDateProper = false
+    return if (isDateProper) {
+        String.format("%d %s %d", day, month, year)
+    } else {
+        ""
+    }
+}
 
 /**
  * Средняя
@@ -97,7 +194,25 @@ fun dateDigitToStr(digital: String): String = TODO()
  * Все символы в номере, кроме цифр, пробелов и +-(), считать недопустимыми.
  * При неверном формате вернуть пустую строку
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun flattenPhoneNumber(phone: String): String {
+    var str = phone
+    var isStringValid = true
+
+    str = str.replace(Regex("[-()\\s]")) {
+        when (it.value) {
+            "(" -> ""
+            ")" -> ""
+            "-" -> ""
+            " " -> ""
+            else -> it.value
+        }
+    }
+    if (str.contains(Regex("[^\\d\\+]"))) isStringValid = false
+    //if (str.contains(Regex("\\+")) && !str.contains(Regex("^\\+"))) isStringValid = false
+    if (str.contains(Regex("\\d\\++"))) isStringValid = false
+    if (str.contains(Regex("^\\+{2,}"))) isStringValid = false
+    return if (isStringValid) str else ""
+}
 
 /**
  * Средняя
@@ -109,7 +224,27 @@ fun flattenPhoneNumber(phone: String): String = TODO()
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int = TODO()
+fun bestLongJump(jumps: String): Int {
+    var isStringValid = true
+    if (jumps.contains(Regex("[^\\d\\-\\%\\s]"))) return -1
+    var jumpsList = jumps.split(Regex(" "))
+//    var resultsList = mutableListOf<Int>()
+    var result: Int = -1
+
+    for (jump in jumpsList ) {
+        try {
+            if (jump.toInt() > result) {
+                result = jump.toInt()
+            }
+        } catch (e: Exception) {
+        }
+    }
+//    println(isStringValid)
+//    println(jumpsList)
+//    println(result)
+
+    return result
+}
 
 /**
  * Сложная
@@ -132,7 +267,22 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    if (expression.contains(Regex("[^\\d\\-\\+\\s]|" +
+                                            "\\d\\s\\d|" +
+                                            "\\D\\s\\D|" +
+                                            "^\\D"))) throw IllegalArgumentException()
+    var numbers = expression.split(" ")
+    var result = numbers[0].toInt()
+    for (i in 1 until numbers.size - 1 step 2) {
+        if (numbers[i].contains("+")) {
+            result += numbers[i + 1].toInt()
+        } else {
+            result -= numbers[i + 1].toInt()
+        }
+    }
+    return result
+}
 
 /**
  * Сложная
@@ -143,7 +293,21 @@ fun plusMinus(expression: String): Int = TODO()
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    var list = str.split(" ")
+    var hasDuplicate = false
+    var index = 0
+
+    for (i in 0 until list.size - 1) {
+        index += list[i].length + 1
+        if (list[i].toLowerCase() == list[i + 1].toLowerCase()) {
+            index = index - list[i].length - 1
+            hasDuplicate = true
+            break
+        }
+    }
+    return if (hasDuplicate) index else -1
+}
 
 /**
  * Сложная
@@ -156,8 +320,28 @@ fun firstDuplicateIndex(str: String): Int = TODO()
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше либо равны нуля.
  */
-fun mostExpensive(description: String): String = TODO()
-
+fun mostExpensive(description: String): String {
+    if (!description.contains(Regex("\\D\\s\\d"))) return ""
+    val list = description.split("; ")
+    val map = mutableMapOf<String, Double>()
+    for (entry in list) {
+        val listFromPair = entry.split(" ")
+        val pair: Pair<String, Double> = listFromPair[0] to listFromPair[1].toDouble()
+        map[pair.first] = pair.second
+    }
+    var highestPrice = 0.0
+    var highestName = ""
+    for ((key, value) in map) {
+        if (value > highestPrice) {
+            highestPrice = value
+            highestName = key
+        }
+    }
+    return highestName
+}
+fun main(args: Array<String>) {
+    println(mostExpensive("Хлеб 39.9; Молоко 62; Курица 184.0; Конфеты 89.9"))
+}
 /**
  * Сложная
  *
