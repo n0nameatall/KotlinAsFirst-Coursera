@@ -54,7 +54,32 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> = TODO()
+fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
+    val listOfWords = mutableListOf<String>()
+    val resultMap = mutableMapOf<String, Int>()
+    var counter = 0
+
+    for (line in File(inputName).readLines()) {
+        for (word in line.split(" ")) {
+            listOfWords += word
+        }
+    }
+    for (itemToCheck in substrings) {
+        for (word in listOfWords) {
+            if (itemToCheck.length == 1) {
+                for (letter in word) {
+                    val char = itemToCheck[0]
+                    if (letter.toLowerCase() == char.toLowerCase()) {
+                        counter++
+                    }
+                }
+            } else if (word.toLowerCase().contains(itemToCheck.toLowerCase())) counter++
+        }
+        resultMap[itemToCheck] = counter
+        counter = 0
+    }
+    return resultMap
+}
 
 
 /**
@@ -71,7 +96,28 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  *
  */
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    val outputstream = File(outputName).bufferedWriter()
+    val lines = File(inputName).readLines()
+    val charsToCheck = listOf<Char>('Ж', 'ж', 'ч', 'Ч', 'ш', 'Ш', 'щ', 'Щ')
+
+    for (line in lines) {
+        var lineToWrite = ""
+        for (i in 0 until line.length) {
+            when (line[i]) {
+                'Ы' -> if (line[i - 1] in charsToCheck) lineToWrite += 'И' else lineToWrite += line[i]
+                'ы' -> if (line[i - 1] in charsToCheck) lineToWrite += 'и' else lineToWrite += line[i]
+                'Я' -> if (line[i - 1] in charsToCheck) lineToWrite += 'А' else lineToWrite += line[i]
+                'я' -> if (line[i - 1] in charsToCheck) lineToWrite += 'а' else lineToWrite += line[i]
+                'Ю' -> if (line[i - 1] in charsToCheck) lineToWrite += 'У' else lineToWrite += line[i]
+                'ю' -> if (line[i - 1] in charsToCheck) lineToWrite += 'у' else lineToWrite += line[i]
+                else -> lineToWrite += line[i]
+            }
+        }
+        println(lineToWrite)
+        outputstream.write(lineToWrite)
+        outputstream.newLine()
+    }
+    outputstream.close()
 }
 
 /**
@@ -144,7 +190,46 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun top20Words(inputName: String): Map<String, Int> = TODO()
+fun top20Words(inputName: String): Map<String, Int> {
+    val lines = File(inputName).readLines()
+    val mapOfAllWords = mutableMapOf<String, Int>()
+    for (line in lines) {
+        val cleanedLine = line.replace(Regex("([^ЁёА-Яа-я]+)"), " ")
+        for (word in cleanedLine.split(Regex("\\s+"))) {
+            if (word.isEmpty()) continue
+            if (word.toLowerCase() !in mapOfAllWords) {
+                mapOfAllWords[word.toLowerCase()] = 1
+            } else {
+                var wordCount = mapOfAllWords[word.toLowerCase()]
+                wordCount = wordCount!! + 1
+                mapOfAllWords[word.toLowerCase()] = wordCount
+            }
+        }
+    }
+    for (line in lines) {
+        val cleanedLine = line.replace(Regex("([^A-Za-z]+)"), " ")
+        for (word in cleanedLine.split(Regex("\\s+"))) {
+            if (word.isEmpty()) continue
+            if (word.toLowerCase() !in mapOfAllWords) {
+                mapOfAllWords[word.toLowerCase()] = 1
+            } else {
+                var wordCount = mapOfAllWords[word.toLowerCase()]
+                wordCount = wordCount!! + 1
+                mapOfAllWords[word.toLowerCase()] = wordCount
+            }
+        }
+    }
+    val sortedMap = mapOfAllWords.toList().sortedByDescending { (_, value) -> value }.toMap()
+    val finalMap = mutableMapOf<String, Int>()
+    var counter = 0
+
+    for ((key, value) in sortedMap) {
+        finalMap[key] = value
+        counter++
+        if (counter == 20) break
+    }
+    return finalMap
+}
 
 /**
  * Средняя
@@ -210,7 +295,31 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    TODO()
+    val lines = File(inputName).readLines()
+    val outputStream = File(outputName).bufferedWriter()
+    var chaoticWords = mutableListOf<String>()
+
+    for (line in lines) {
+        var allLettersDifferent = true
+        for (i in 0 until line.length) {
+            for (l in i + 1 until line.length) {
+                if (line[i].toLowerCase() == line[l].toLowerCase()) allLettersDifferent = false
+            }
+        }
+        if (allLettersDifferent) chaoticWords.add(line)
+    }
+    var lettersInLongestWord = 0
+    for (word in chaoticWords) {
+        if (word.length > lettersInLongestWord) lettersInLongestWord = word.length
+    }
+    outputStream.write(chaoticWords
+            .filter { it.length >= lettersInLongestWord }
+            .toString()
+            .replace(Regex("(])|(\\[)"), ""))
+    outputStream.close()
+}
+fun main(args: Array<String>) {
+    chooseLongestChaoticWord("input/chaotic_in1.txt","input/chaotic_in1_test.txt" )
 }
 
 /**
